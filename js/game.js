@@ -327,6 +327,7 @@ function Unit (name, unitClass, maxHP, move, imagePath, playerID, strength, skil
 	this.currentHP = maxHP;
 	this.move = move;
 	this.image = new ImageObject (imagePath);
+	this.image_grey = new ImageObject (imagePath.substring(0, imagePath.indexOf(".png")) + "_grey.png");
 	this.active = true; // turns to false after it moves.
 	this.playerID = playerID;
 	this.x = 0;
@@ -1079,7 +1080,11 @@ function drawAll () {
 
 	grid.iterateScreen(function (coor) {  // highlights the available moves in blue after looping through every spot on the grid
 		if (grid.unitOnScreen(coor)) {
-			grid.unitOnScreen(coor).image.drawOnGrid(coor.unscreenify());
+			if(grid.unitOnScreen(coor).active){
+				grid.unitOnScreen(coor).image.drawOnGrid(coor.unscreenify());
+			}else{
+				grid.unitOnScreen(coor).image_grey.drawOnGrid(coor.unscreenify());
+			}
 		}
 	});
 	cursor.draw(); // draws the cursor
