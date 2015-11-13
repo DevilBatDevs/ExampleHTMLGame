@@ -1,137 +1,3 @@
-/** ITEMS: (i actually dont think inheritance helps whatsoever with this)*/
-function Item(name, price, imagePath, itemID){
-	this.name = name;
-	this.price = price;
-	this.image = new ImageObject (imagePath);
-	this.itemID = itemID;
-	this.usable = false;
-}
-
-function QuestItem(){
-	QuestItem.prototype = Object.create(Item.prototype);
-
-}
-
-function SellableItem(name, price, imagePath, itemID, uses){
-	SellableItem.prototype = Object.create(Item.prototype);
-	this.uses = uses
-}
-
-function Weapon(name, price, imagePath, itemID, uses, range, weight, might, hit, crit, type, rank, wex){
-	this.name = name;
-	this.price = price;
-	this.image = new ImageObject (imagePath);
-	this.itemID = itemID;
-	this.uses = uses;
-	this.range = range;
-	this.weight = weight;
-	this.might = might;
-	this.hit = hit;
-	this.crit = crit;
-	this.rank = rank;
-	this.wex = wex;
-	this.type = type;
-
-	switch (this.type) { //TODO: add weapon triangle and all that
-        case 0:
-            this.weaponType = "Sword";
-            break;
-        case 1:
-        	this.weaponType = "Lance";
-        	break;
-        case 2:
-        	this.weaponType = "Axe";
-        	break;
-        case 3:
-        	this.weaponType = "Bow";
-        	break;
-        case 4:
-        	this.weaponType = "Dark Tome";
-        	break;
-        case 5:
-        	this.weaponType = "Light Tome";
-        	break;
-        case 6:
-        	this.weaponType = "Anima Tome";
-        	break;
-        case 7:
-        	this.weaponType = "Staff";
-        	break;
-        default:
-            this.weaponType = "Sword";
-        	break;
-    }
-    this.itemType = "Weapon";
-} Weapon.prototype.triangleBonus = function (defendingWeapon) {
-    switch (this.type) { //TODO: add weapon triangle and all that
-        case 0:
-            switch (defendingWeapon.type) {
-                case 0:
-                    return 0;
-                case 1:
-                    return -1;
-                case 2:
-                    return 1;
-                default:
-                    return 0;
-            }
-        case 1:
-        	switch (defendingWeapon.type) {
-                case 0:
-                    return 1;
-                case 1:
-                    return 0;
-                case 2:
-                    return -1;
-                default:
-                    return 0;
-            }
-        case 2:
-        	switch (defendingWeapon.type) {
-                case 0:
-                    return -1;
-                case 1:
-                    return 1;
-                case 2:
-                    return 0;
-                default:
-                    return 0;
-            }
-        default:
-            return 0;
-    }
-}; Weapon.prototype.effectiveBonus = function (targetUnit) {
-    return 1;
-};
-
-function ConsumableItem(name, price, imagePath, itemID, uses, type, effect, description){
-	ConsumableItem.prototype = Object.create(SellableItem.prototype);
-	this.name = name;
-	this.price = price;
-	this.image = new ImageObject(imagePath);
-	this.itemID = itemID;
-	this.usable = true;
-	this.uses = uses;
-	this.type = type;
-	this.effect = effect;
-	switch (this.type) {	//probably will have to change this later
-		case 0:
-			this.effectType = "Heal self";
-
-			break;
-        case 1:
-            this.effectType = "Heal other";
-            
-            break;
-        default:
-            this.effectType = "Sword"
-
-        	break;
-    }
-    this.itemType = "ConsumableItem";
-    this.description = description;
-}
-
 /**
  * Adds Event Listeners for keyboard events (pressing down and pressing up) and
  * these listeners save the events into the dictionary keysDown for use later.
@@ -139,10 +5,8 @@ function ConsumableItem(name, price, imagePath, itemID, uses, type, effect, desc
 var keysDown = {};
 addEventListener("keydown", function (e) { keysDown[e.keyCode] = true }, false);	//eventlisteners! so that the game knows to watch out for keypresses! woah!
 addEventListener("keyup", function (e) { delete keysDown[e.keyCode] }, false);
-
 var canvas = document.createElement("canvas"); //this creates the canvas! all the stuff we see exists on the canvas! woah!
 var context = canvas.getContext("2d");	//canvas specifications
-
 canvas.width = 500; canvas.height = 369;	//canvas specifications (size)
 document.body.appendChild(canvas);			//place canvas in the main html code? woah?
 attackMoveRange = [];
@@ -157,7 +21,6 @@ function Game (numPlayers) {		//sets initial game parameters? woah?
     
     menu.reset();
 }; var game = new Game(2);
-
 /**
  * Constants singleton, collection of a lot of magic numbers
  */
@@ -167,7 +30,6 @@ var CONSTANTS = new function () {
 	this.mapWidth = 15;
 	this.mapHeight = 10;
 };
-
 function UnitClass (name, weaponUsage, specialClassifications, possiblePromotions, killExpBonus, classPower) {
     this.name = name;
     this.weaponUsage = weaponUsage;
@@ -184,7 +46,6 @@ function UnitClass (name, weaponUsage, specialClassifications, possiblePromotion
 unitClasses["SwordLord"] = new UnitClass ("Lord", [0], [], ["SwordGreatLord"], 0, 3);
 unitClasses["Paladin"] = new UnitClass ("Paladin", [0, 1], ["mounted", "promoted"], [], 60, 3);
 unitClasses["Fighter"] = new UnitClass ("Fighter", [2], [], ["Warrior", "Hero"], 0, 3);
-
 var IMAGES = new function () {
 	this.menu_top = new ImageObject ("images/menu-top.png");
 	this.menu_mid = new ImageObject ("images/menu-middle.png");
@@ -210,44 +71,6 @@ var IMAGES = new function () {
     this.levelBackgrounds = [];
     this.levelBackgrounds.push(new ImageObject("images/level0.png"));
 };
-
-/**
- * Class that contains the cursor used in the game. Self-explanatory for the
- * most part.
- */
-
-function Cursor() {
-	this.imageObject = new ImageObject ("images/cursor.png");
-	this.x = 0;
-	this.y = 0;
-} Cursor.prototype.coor = function () {
-	return new Coor(this.x, this.y);
-}; Cursor.prototype.draw = function () {
-	this.imageObject.drawOnGrid(cursor.coor());
-}; Cursor.prototype.coorOnScreen = function () {
-    return this.coor().screenify();
-}; Cursor.prototype.up = function () {
-    if(cursor.y != 0) {   //if the cursor isn't in the top row
-        cursor.y -= 1;  //when you're going up, you're always decreasing the y value
-    }
-}; Cursor.prototype.down = function () {
-    if(cursor.y != grid.height - 1) {
-        cursor.y += 1;
-    }
-}; Cursor.prototype.left = function () {
-    if(cursor.x != 0) {
-        cursor.x -= 1;
-    }
-}; Cursor.prototype.right = function () {
-    if(cursor.x != grid.width - 1) {
-        cursor.x += 1;
-    }
-}; Cursor.prototype.jumpTo = function (coor) {
-    this.x = coor.x;
-    this.y = coor.y;
-}; cursor = new Cursor();
-
-
 /**
  * Class that encapsulates coordinates. Screenify and unscreenify change
  * the displacements from the top left of the screen to the top left of the
@@ -275,206 +98,8 @@ function hashCoor (coor) {
 function unhashCoor (hashedCoor) {
 	return new Coor(parseInt(hashedCoor / 1000), hashedCoor % 1000);
 }
-
 attackMoveRange = [];
 availableMoves = [];
-
-/**
- * Class for each controllable unit. Initializes at (0, 0), must be changed.
- */
-function Unit (name, unitClass, maxHP, move, imagePath, playerID, strength, skill, speed, luck, defense, resistance, constitution, aid, traveler, affinity, condition, level, experience, numWins, numLosses, numBattles, specialLabels, HPGrowth, SMGrowth, SklGrowth, SpdGrowth, LckGrowth, DefGrowth, ResGrowth) {
-	this.name = name;
-    this.unitClass = unitClass;
-	this.inventory = [];
-	this.maxHP = maxHP;
-	this.currentHP = maxHP;
-	this.move = move;
-	this.image = new ImageObject (imagePath);
-	this.image_grey = new ImageObject (imagePath.substring(0, imagePath.indexOf(".png")) + "_grey.png");
-	this.active = true; // turns to false after it moves.
-	this.playerID = playerID;
-	this.x = 0;
-	this.y = 0;
-	this.equipped = null;
-	this.strength = strength;
-	this.skill = skill;
-	this.speed = speed;
-	this.luck = luck;
-	this.defense = defense;
-	this.resistance = resistance;
-	this.constitution = constitution;
-	this.aid = aid;
-	this.traveler = traveler;
-	this.affinity = affinity;
-	this.condition = condition;
-    this.level = level;
-    this.experience = experience;
-    this.numWins = numWins;
-    this.numLosses = numLosses;
-    this.numBattles = numBattles
-    this.HPGrowth = HPGrowth;
-    this.SMGrowth = SMGrowth;
-    this.SklGrowth = SklGrowth;
-    this.SpdGrowth = SpdGrowth;
-    this.LckGrowth = LckGrowth;
-    this.DefGrowth = DefGrowth;
-    this.ResGrowth = ResGrowth;
-    this.specialLabels = specialLabels;
-} Unit.prototype.coor = function () {
-	return new Coor(this.x, this.y);
-}; Unit.prototype.gainExp = function (experience) {
-    this.experience += experience;
-    while (this.experience >= 100) {
-        this.experience -= 100;
-        this.levelUp();
-    }
-}; Unit.prototype.gainExpFromDamage = function (defender, damage) {
-    var experience = 0;
-    if (damage == 0) {
-        experience = 1;
-    } else {
-        experience = Math.floor((31 + defender.level + unitClasses[defender.unitClass].damageExpBonus - this.level - unitClasses[this.unitClass].damageExpBonus) / unitClasses[this.unitClass].classPower);
-    }
-    this.gainExp(experience);
-}; Unit.prototype.gainExpFromKill = function (defender) {
-    //[(enemy's Level x enemy's Class power) + enemy's Class bonus B] - { [(Level x Class power) + Class bonus B] / Mode coefficient }
-    var experience = Math.floor(defender.level * unitClasses[defender.unitClass].classPower + unitClasses[defender.unitClass].killExpBonus - this.level * unitClasses[this.unitClass].classPower - unitClasses[this.unitClass].killExpBonus);
-    if (experience <= 0) {
-        experience = Math.floor(defender.level * unitClasses[defender.unitClass].classPower + unitClasses[defender.unitClass].killExpBonus + (-1 * this.level * unitClasses[this.unitClass].classPower - unitClasses[this.unitClass].killExpBonus) / 2) + 1;
-    }
-    experience += 20;
-    if (defender.specialLabels.indexOf("boss") != -1) {
-        experience += 40;
-    }
-    if (experience < 0) {
-        experience = 0;
-    }
-    
-    this.gainExp(experience);
-}; Unit.prototype.levelUp = function () {
-    this.level++;
-    if (Math.random() * 100 < this.HPGrowth) {
-        this.maxHP++;
-        this.currentHP++;
-    }
-    if (Math.random() * 100 < this.SMGrowth) {
-        this.strength++;
-    }
-    if (Math.random() * 100 < this.SklGrowth) {
-        this.skill++;
-    }
-    if (Math.random() * 100 < this.SpdGrowth) {
-        this.speed++;
-    }
-    if (Math.random() * 100 < this.LckGrowth) {
-        this.luck++;
-    }
-    if (Math.random() * 100 < this.DefGrowth) {
-        this.defense++;
-    }
-    if (Math.random() * 100 < this.ResGrowth) {
-        this.resistance++;
-    }
-}; Unit.prototype.canAttack = function () {
-    if (this.equipped == null){
-        return false;
-    }
-    for (var i = 0; i < CONSTANTS.hashedDirections.length; i++) {
-        var hashedTile = CONSTANTS.hashedDirections[i] + hashCoor(this.coor());
-        if (grid.unitAt(unhashCoor(hashedTile)) && grid.unitAt(unhashCoor(hashedTile)).playerID != this.playerID) {
-            return true;
-        }
-    }
-    return false;
-}; Unit.prototype.canTrade = function () {
-    for (var i = 0; i < CONSTANTS.hashedDirections.length; i++) {
-        var hashedTile = CONSTANTS.hashedDirections[i] + hashCoor(this.coor());
-        if (grid.unitAt(unhashCoor(hashedTile)) && grid.unitAt(unhashCoor(hashedTile)).playerID == this.playerID) {
-            if (grid.selectedUnit.hasItems() && grid.unitAt(unhashCoor(hashedTile)).hasItems()) {
-				return true;
-			}
-        }
-    }
-    return false;
-}; Unit.prototype.hasItems = function () {
-    return this.inventory.length != 0;
-}; Unit.prototype.giveItem = function (item) {
-	if (this.inventory.length < 6){
-		this.inventory.push(item);
-	}
-	if (this.equipped == null){	//TODO: check if equippable
-		this.equipItem(this.inventory.length - 1);
-	}
-}; Unit.prototype.removeItem = function (index, item) { //either needs to be renamed or changed (currently replaces item)
-	this.inventory.splice(index, 1, item);
-	if (this.equipped == index) {
-		this.equipped = null;
-	} 
-}; Unit.prototype.updateInventory = function () {
-	temp = []
-	for (i = 0; i < this.inventory.length; i++) {
-		if (this.inventory[i].uses > 0) {
-			temp.push(this.inventory[i]);
-		} else if (i == this.equipped) {
-			//this.attack -= this.inventory[this.equipped].might; //probably badly coded but will be deprecated soon anyway since we're revamping how stats figure into attacks
-			this.equipped = null;
-		}
-	}
-	this.inventory = temp;
-	if (this.equipped == null) { 
-		for (i = 0; i < this.inventory.length; i++) {
-			if (this.inventory[i].itemID == 0) {
-				this.equipItem(i);
-				break;
-			}
-		}
-	}
-}; Unit.prototype.equipItem = function (index) {
-	//if (this.equipped != null) {
-		//this.attack -= this.inventory[this.equipped].might;
-	//}
-	this.equipped = index;
-	//this.attack += this.inventory[this.equipped].might;
-}; Unit.prototype.weapon = function () {
-    if (this.equipped == null) {
-        return null;
-    } else {
-        return this.inventory[this.equipped];
-    }
-}; Unit.prototype.heal = function (amount) {
-    if (this.currentHP >= this.maxHP) {
-        return 0;
-    }
-    
-    this.currentHP += amount;
-	if (this.currentHP > this.maxHP) {
-		this.currentHP = this.maxHP;
-	}
-	return 1;
-}; Unit.prototype.damage = function (amount) {
-    this.currentHP -= amount;
-    if (this.currentHP <= 0) {
-        this.currentHP = 0;
-        return 0;
-    } else {
-        return 1;
-    }
-}; Unit.prototype.physicalAttack = function (targetUnit) {
-    return this.strength + ((this.weapon().might + this.weapon().triangleBonus(targetUnit.weapon())) * this.weapon().effectiveBonus(targetUnit));
-}; Unit.prototype.physicalDefense = function () {
-    return this.defense + grid.tileAt(this.coor()).defense;
-}; Unit.prototype.criticalBonus = function (targetUnit) {
-    var criticalRate = this.weapon().crit + this.skill / 2; // = Weapon Critical + (Skill / 2) + Support bonus + Class Critical bonus + S Rank bonus 
-    var criticalEvade = targetUnit.luck;
-    if (Math.random() * 100 <= criticalRate - criticalEvade) {
-        console.log("Critical Attack!");
-        return 3;
-    } else {
-        console.log("Normal Attack!");
-        return 1;
-    }
-};
-
 function Tile (terrainType) {
 	//this.walkable = walkable; // sets the terrain's traversible field to the value inputted, walkable or not walkable so you can toggle whether or not a character can go somewhere?
 	this.unit = null;  //each tile has a unit
@@ -525,7 +150,6 @@ function Tile (terrainType) {
 } Tile.prototype.setUnit = function (unit) {
 	this.unit = unit;
 };
-
 function generateMovementRange (unit) {
 	availableMoves = [];
 	availableMoves.push(hashCoor(unit.coor()));
@@ -561,7 +185,6 @@ function generateMovementRange (unit) {
 		}
 	}
 }
-
 function populateActionMenu () {
     menu = new Menu();
     if (grid.selectedUnit.canAttack()) {
@@ -618,7 +241,6 @@ function populateActionMenu () {
     });
     //return actionMenu;
 }
-
 function populateInventoryMenu (unit) {
     menu = new Menu();
 	for (i = 0; i < unit.inventory.length; i++) {
@@ -641,7 +263,6 @@ function populateInventoryMenu (unit) {
         populateActionMenu();
     });
 }
-
 function populateItemUsageMenu (item) {
 	menu = new Menu();
 	if (item.itemID == 0) {
@@ -657,7 +278,6 @@ function populateItemUsageMenu (item) {
 				selectedItem.uses -= grid.selectedUnit.heal(healingFactor);
 				
 				grid.selectedUnit.updateInventory();
-
 				grid.selectedUnit.active = false;
 		        // TODO: should make this into a function
 		        var allInactive = true;
@@ -688,7 +308,6 @@ function populateItemUsageMenu (item) {
         populateInventoryMenu(grid.selectedUnit);
     });
 }
-
 function populateTradeMenu1 (unit) { //TODO: Recode to actually be like the game
 	menu = new Menu();
 	menu.addOption(unit.name, function () {});
@@ -704,7 +323,6 @@ function populateTradeMenu1 (unit) { //TODO: Recode to actually be like the game
         populateActionMenu(); 
     });
 }
-
 function populateTradeMenu2 (unit) { //TODO: Recode to actually be like the game
      //currently badly implemented (this and the previous few) - Sung
      //even after my my refactoring, Sung's above comment applies - Jeff
@@ -714,7 +332,6 @@ function populateTradeMenu2 (unit) { //TODO: Recode to actually be like the game
 		menu.addOption(unit.inventory[i].name, function () {
             selectedItem1 = grid.selectedUnit.inventory[selectedItemIndex];
             selectedItem2 = grid.unitAt(cursor.coor()).inventory[menu.index - 1];
-
             grid.selectedUnit.removeItem(selectedItemIndex, selectedItem2);
             grid.unitAt(cursor.coor()).removeItem(menu.index - 1, selectedItem1);
             
@@ -729,21 +346,17 @@ function populateTradeMenu2 (unit) { //TODO: Recode to actually be like the game
         populateTradeMenu1(grid.selectedUnit);
     });
 }
-
 //Weapon(name, price, imagePath, itemID, uses, range, weight, might, hit, crit, type, rank, wex)
-
 var units = [];
 units.push(new Unit("Seth", "Paladin", 30, 8, "images/seth.png", 0, 14, 13, 12, 13, 11, 8, 11, 14, null, "anima", null, 1, 0, 0, 0, 0, [], 90, 50, 45, 45, 25, 40, 30));
 //Seth's items
 units[0].giveItem(new Weapon("Silver Lance", 1200, "placeholder", 0, 20, 1, 10, 14, 0.75, 0, 1, 'A', 1)); //give seth silver lance, eirika rapier vulneraries, goblin bronze axe
 units[0].giveItem(new Weapon("Steel Sword", 600, "placeholder", 0, 30, 1, 10, 8, 0.75, 0, 0, 'D', 1));
 units[0].giveItem(new ConsumableItem("Vulnerary", 300, "placeholder", 1, 3, 0, 10, "Restores some HP."));
-
 units.push(new Unit("Eirika", "SwordLord", 16, 5, "images/eirika.png", 0, 4, 8, 9, 5, 3, 1, 5, 4, null, "light", null, 1, 0, 0, 0, 0, ["boss"], 70, 40, 60, 60, 60, 30, 30));
 //Eirika's items
 units[1].giveItem(new Weapon("Rapier", 0, "placeholder", 0, 40, 1, 5, 7, 0.95, 10, 0, 'Prf', 2)); //TODO: add rapier's special shit
 units[1].giveItem(new ConsumableItem("Vulnerary", 300, "placeholder", 1, 3, 0, 10, "Restores some HP."));
-
 units.push(new Unit("Cutthroat", "Fighter", 22, 5, "images/axe_soldier.png", 1, 5, 1, 1, 0, 5, 0, 11, 10, null, null, null, 1, 0, 0, 0, 0, [], 20, 20, 20, 20, 20, 20, 20));
 units.push(new Unit("Cutthroat", "Fighter", 21, 5, "images/axe_soldier.png", 1, 5, 2, 4, 0, 2, 0, 11, 10, null, null, null, 2, 0, 0, 0, 0, [], 20, 20, 20, 20, 20, 20, 20));
 units.push(new Unit("O'Neill", "Fighter", 24, 5, "images/axe_soldier.png", 1, 6, 4, 8, 0, 2, 0, 11, 10, null, "fire", null, 4, 0, 0, 0, 0, ["boss"], 20, 20, 20, 20, 20, 20, 20));
@@ -751,7 +364,6 @@ units.push(new Unit("O'Neill", "Fighter", 24, 5, "images/axe_soldier.png", 1, 6,
 units[2].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
 units[3].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
 units[4].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
-
 function Grid () {
     this.grid = [];
 	this.width = 15;  this.height = 10;
@@ -815,7 +427,6 @@ function Grid () {
     }
 };
 var grid = new Grid();
-
 function Menu () {
     this.index = 0;
     this.options = [];
@@ -838,7 +449,6 @@ function Menu () {
 }; Menu.prototype.go = function () {
     this.actions[this.options[this.index]]();
 }; menu = new Menu();
-
 function processInputs () {
     if (88 in keysDown) {  //pressed "B"
         console.log("go back a menu");
@@ -989,7 +599,6 @@ function processInputs () {
 	
     keysDown = {};
 }
-
 function drawActionMenu (listOfOptions) {
     var xStart = 0; var yStart = 20;
     if (cursor.coorOnScreen().x < 8) {
@@ -1010,7 +619,6 @@ function drawActionMenu (listOfOptions) {
     IMAGES.menu_bot.drawOnScreen(xStart, yStart + i * 38 + 20);
     IMAGES.menu_cursor.drawOnScreen(xStart - 20, yStart + 25 + 38 * (menu.index));
 }
-
 function drawInventoryPanel (inventory) {
     var xStart = 22; var yStart = 16;
     
@@ -1063,7 +671,6 @@ function drawInventoryPanel (inventory) {
         context.fillText("Return to Action Menu", 255, 240);
     }
 }
-
 function drawAll () {
 	IMAGES.wrapperImage.draw(0, 0);
 	/*
@@ -1084,7 +691,6 @@ function drawAll () {
 			IMAGES.redHighlight.drawOnGrid(coor);
 		}
 	});
-
 	grid.iterateScreen(function (coor) {  // highlights the available moves in blue after looping through every spot on the grid
 		if (grid.unitOnScreen(coor)) {
 			if(grid.unitOnScreen(coor).active){
