@@ -194,3 +194,17 @@ function Unit (name, unitClass, maxHP, move, imagePath, playerID, strength, skil
         return 1;
     }
 };
+
+function UnitClass (name, weaponUsage, specialClassifications, possiblePromotions, killExpBonus, classPower) {
+    this.name = name;
+    this.weaponUsage = weaponUsage;
+    this.specialClassifications = specialClassifications;
+    this.possiblePromotions = possiblePromotions;
+    if (specialClassifications.indexOf("promoted") != -1) {
+        this.damageExpBonus = 20;
+    } else {
+        this.damageExpBonus = 0;
+    }
+    this.killExpBonus = killExpBonus;
+    this.classPower = classPower;
+}

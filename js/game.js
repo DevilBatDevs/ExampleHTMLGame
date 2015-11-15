@@ -1,14 +1,8 @@
-/**
- * Adds Event Listeners for keyboard events (pressing down and pressing up) and
- * these listeners save the events into the dictionary keysDown for use later.
- */
-var keysDown = {};
-addEventListener("keydown", function (e) { keysDown[e.keyCode] = true }, false);	//eventlisteners! so that the game knows to watch out for keypresses! woah!
-addEventListener("keyup", function (e) { delete keysDown[e.keyCode] }, false);
-var canvas = document.createElement("canvas"); //this creates the canvas! all the stuff we see exists on the canvas! woah!
+var canvas = document.createElement("canvas");
 var context = canvas.getContext("2d");	//canvas specifications
 canvas.width = 500; canvas.height = 369;	//canvas specifications (size)
 document.body.appendChild(canvas);			//place canvas in the main html code? woah?
+
 attackMoveRange = [];
 availableMoves = [];
 function Game (numPlayers) {		//sets initial game parameters? woah?
@@ -30,126 +24,14 @@ var CONSTANTS = new function () {
 	this.mapWidth = 15;
 	this.mapHeight = 10;
 };
-function UnitClass (name, weaponUsage, specialClassifications, possiblePromotions, killExpBonus, classPower) {
-    this.name = name;
-    this.weaponUsage = weaponUsage;
-    this.specialClassifications = specialClassifications;
-    this.possiblePromotions = possiblePromotions;
-    if (specialClassifications.indexOf("promoted") != -1) {
-        this.damageExpBonus = 20;
-    } else {
-        this.damageExpBonus = 0;
-    }
-    this.killExpBonus = killExpBonus;
-    this.classPower = classPower;
-} var unitClasses = {};
+var unitClasses = {};
 unitClasses["SwordLord"] = new UnitClass ("Lord", [0], [], ["SwordGreatLord"], 0, 3);
 unitClasses["Paladin"] = new UnitClass ("Paladin", [0, 1], ["mounted", "promoted"], [], 60, 3);
 unitClasses["Fighter"] = new UnitClass ("Fighter", [2], [], ["Warrior", "Hero"], 0, 3);
-var IMAGES = new function () {
-	this.menu_top = new ImageObject ("images/menu-top.png");
-	this.menu_mid = new ImageObject ("images/menu-middle.png");
-	this.menu_bot = new ImageObject ("images/menu-bottom.png");
-	this.menu_cursor = new ImageObject ("images/menu-cursor.png");
-    this.inventory_top = new ImageObject ("images/inventory_top.png");
-    this.inventory_mid = new ImageObject ("images/inventory_slot.png");
-    this.inventory_bot = new ImageObject ("images/inventory_bottom.png");
-    this.inventory_highlight = new ImageObject ("images/inventory_highlight.png");
-    this.inventory_description = new ImageObject ("images/inventory_description.png");
-    this.stats_page = new ImageObject ("images/stats_page.png");
-	this.terrainMapObjects = {};
-	this.terrainMapObjects[0] = new ImageObject("images/Plain.png");
-	this.terrainMapObjects[1] = new ImageObject("images/Peak.png");
-    this.terrainMapObjects[2] = new ImageObject("images/River.png");
-    this.terrainMapObjects[3] = new ImageObject("images/Bridge.png");
-    this.terrainMapObjects[4] = new ImageObject("images/Forest.png");
-	this.blueHighlight = new ImageObject("images/blue_highlight2.png");
-	this.redHighlight = new ImageObject("images/red_highlight1.png");
-	this.characterPane = new ImageObject("images/character_pane.png");
-    this.terrainPane = new ImageObject("images/terrain_pane.png");
-	this.wrapperImage = new ImageObject("images/vba-window.png");
-    this.levelBackgrounds = [];
-    this.levelBackgrounds.push(new ImageObject("images/level0.png"));
-};
-/**
- * Class that encapsulates coordinates. Screenify and unscreenify change
- * the displacements from the top left of the screen to the top left of the
- * entire map.
- */
-function Coor (x, y) {
-	this.x = x;
-	this.y = y;
-} Coor.prototype.equals = function (coor) {
-	if (coor instanceof Coor) return this.x == coor.x && this.y == coor.y;
-	return false;
-}; Coor.prototype.unscreenify = function () {
-	return new Coor(this.x + grid.xDisplace, this.y + grid.yDisplace);
-}; Coor.prototype.screenify = function () {
-	return new Coor(this.x - grid.xDisplace, this.y - grid.yDisplace);
-};
-/**
- * We hash coordinates to integers so that we can store them in arrays and
- * use array methods without programming our own. As long as x and y are both
- * between 0 and 999 inclusive, the coordinates and the hash are 1-to-1
- */
-function hashCoor (coor) {
-	return coor.x * 1000 + coor.y;
-}
-function unhashCoor (hashedCoor) {
-	return new Coor(parseInt(hashedCoor / 1000), hashedCoor % 1000);
-}
+
 attackMoveRange = [];
 availableMoves = [];
-function Tile (terrainType) {
-	//this.walkable = walkable; // sets the terrain's traversible field to the value inputted, walkable or not walkable so you can toggle whether or not a character can go somewhere?
-	this.unit = null;  //each tile has a unit
-    this.type = terrainType;  // numeric representation of the type
-    switch (this.type) {
-        case 0:
-            this.name = "Plain";
-            this.walkable = true;
-            this.flyable = true;
-            this.defense = 0;
-            this.avoid = 0;
-            break;
-        case 1:
-            this.name = "Peak";
-            this.walkable = false;
-            this.flyable = true;
-            this.defense = 2;
-            this.avoid = 40;
-            break;
-        case 2:
-            this.name = "River";
-            this.walkable = false;
-            this.flyable = true;
-            this.defense = 0;
-            this.avoid = 0;
-            break;
-        case 3:
-            this.name = "Bridge";
-            this.walkable = true;
-            this.flyable = true;
-            this.defense = 0;
-            this.avoid = 0;
-            break;
-        case 4:
-            this.name = "Forest";
-            this.walkable = true;
-            this.flyable = true;
-            this.defense = 1;
-            this.avoid = 20;
-            break;
-        default:
-            this.name = "Plain";
-            this.walkable = true;
-            this.flyable = true;
-            this.defense = 0;
-            this.avoid = 0;
-    }
-} Tile.prototype.setUnit = function (unit) {
-	this.unit = unit;
-};
+
 function generateMovementRange (unit) {
 	availableMoves = [];
 	availableMoves.push(hashCoor(unit.coor()));
@@ -364,91 +246,9 @@ units.push(new Unit("O'Neill", "Fighter", 24, 5, "images/axe_soldier.png", 1, 6,
 units[2].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
 units[3].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
 units[4].giveItem(new Weapon("Iron Axe", 270, "placeholder", 0, 45, 1, 10, 8, 0.75, 0, 2, "E", 1));
-function Grid () {
-    this.grid = [];
-	this.width = 15;  this.height = 10;
-	this.xDisplace = 0;  this.yDisplace = 0;
-	this.selectedUnit = null;
-	data = [[0, 0, 4, 1, 0, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1],
-        [2, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [2, 3, 2, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0],
-        [1, 1, 1, 1, 1, 1, 1, 1, 0, 4, 1, 1, 1, 1, 1],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4, 0, 0, 4, 0],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 4],
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0]];
-    this.grid = [];
-    for (i = 0; i < this.width; i++) {
-        this.grid.push([]);
-        for (j = 0; j < this.height; j++) {
-            this.grid[i].push(new Tile(data[j][i]));
-        }
-    }
-    this.placeUnitAt(units[0], 4, 4);
-    this.placeUnitAt(units[1], 4, 5);
-    this.placeUnitAt(units[2], 8, 6);
-	this.placeUnitAt(units[3], 9, 6);
-    this.placeUnitAt(units[4], 10, 8);
-} Grid.prototype.placeUnitAt = function (unit, x, y) {
-	if (this.grid[unit.x][unit.y].unit == unit) {
-		this.grid[unit.x][unit.y].unit = null;
-	}
-	unit.x = x;
-	unit.y = y;
-	this.grid[x][y].unit = unit;
-}; Grid.prototype.unitAt = function (coor) {
-	return this.grid[coor.x][coor.y].unit;
-}; Grid.prototype.tileAt = function (coor) {
-	return this.grid[coor.x][coor.y];
-}; Grid.prototype.tileOnScreen = function (coor) {
-	return this.grid[coor.x + this.xDisplace][coor.y + this.yDisplace];
-}; Grid.prototype.unitOnScreen = function (coor) {
-	return this.grid[coor.x + this.xDisplace][coor.y + this.yDisplace].unit;
-}; Grid.prototype.iterateScreen = function (runnable) {
-	for (i = 0; i < CONSTANTS.mapWidth; i++) {
-		for (j = 0; j < CONSTANTS.mapHeight; j++) {
-			runnable(new Coor(i, j));
-		}
-	}
-}; Grid.prototype.adjust = function () {
-    if (grid.yDisplace > 0 && cursor.y - grid.yDisplace == 2) {
-        grid.yDisplace--;
-    }
-    if (grid.yDisplace < grid.height - CONSTANTS.mapHeight && cursor.y - grid.yDisplace == CONSTANTS.mapHeight - 3) {
-        grid.yDisplace++;
-    }
-    if (grid.xDisplace > 0 && cursor.x - grid.xDisplace == 2) {
-        grid.xDisplace--;
-    }
-    if (grid.xDisplace < grid.width - CONSTANTS.mapWidth && cursor.x - grid.xDisplace == CONSTANTS.mapWidth - 3) {
-        grid.xDisplace++;
-    }
-};
+
 var grid = new Grid();
-function Menu () {
-    this.index = 0;
-    this.options = [];
-    this.actions = {};
-} Menu.prototype.up = function () {
-    this.index++;
-    if (this.index >= this.options.length) {
-        this.index = this.options.length - 1;
-    }
-}; Menu.prototype.down = function () {
-    this.index--;
-    if (this.index < 0) {
-        this.index = 0;
-    }
-}; Menu.prototype.reset = function () {
-    this.index = 0;
-}; Menu.prototype.addOption = function (text, action) {
-    this.options.push(text);
-    this.actions[text] = action;
-}; Menu.prototype.go = function () {
-    this.actions[this.options[this.index]]();
-}; menu = new Menu();
+var menu = new Menu();
 function processInputs () {
     if (88 in keysDown) {  //pressed "B"
         console.log("go back a menu");
@@ -595,8 +395,6 @@ function processInputs () {
             }
         }
     }
-    
-	
     keysDown = {};
 }
 function drawActionMenu (listOfOptions) {
