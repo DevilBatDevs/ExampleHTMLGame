@@ -1,0 +1,25 @@
+var IMAGES = new function () {
+	this.menu_top = new ImageObject ("images/menu-top.png");
+	this.menu_mid = new ImageObject ("images/menu-middle.png");
+	this.menu_bot = new ImageObject ("images/menu-bottom.png");
+	this.menu_cursor = new ImageObject ("images/menu-cursor.png");
+    this.inventory_top = new ImageObject ("images/inventory_top.png");
+    this.inventory_mid = new ImageObject ("images/inventory_slot.png");
+    this.inventory_bot = new ImageObject ("images/inventory_bottom.png");
+    this.inventory_highlight = new ImageObject ("images/inventory_highlight.png");
+    this.inventory_description = new ImageObject ("images/inventory_description.png");
+    this.stats_page = new ImageObject ("images/stats_page.png");
+	this.terrainMapObjects = {};
+	this.terrainMapObjects[0] = new ImageObject("images/Plain.png");
+	this.terrainMapObjects[1] = new ImageObject("images/Peak.png");
+    this.terrainMapObjects[2] = new ImageObject("images/River.png");
+    this.terrainMapObjects[3] = new ImageObject("images/Bridge.png");
+    this.terrainMapObjects[4] = new ImageObject("images/Forest.png");
+	this.blueHighlight = new ImageObject("images/blue_highlight2.png");
+	this.redHighlight = new ImageObject("images/red_highlight1.png");
+	this.characterPane = new ImageObject("images/character_pane.png");
+    this.terrainPane = new ImageObject("images/terrain_pane.png");
+	this.wrapperImage = new ImageObject("images/vba-window.png");
+    this.levelBackgrounds = [];
+    this.levelBackgrounds.push(new ImageObject("images/level0.png"));
+};
