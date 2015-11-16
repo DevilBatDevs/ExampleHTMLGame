@@ -8,7 +8,9 @@ $.getScript("js/image_object.js", function(){
 							$.getScript("js/menu.js", function(){
 								$.getScript("js/images.js", function(){
 									$.getScript("js/event_listener.js", function(){
-										$.getScript("js/game.js");
+										$.getScript("js/movement_range.js", function(){
+											$.getScript("js/game.js");
+										});
 									});
 								});
 							});
